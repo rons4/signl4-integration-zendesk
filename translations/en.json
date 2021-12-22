@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "SIGNL4",
+    "short_description": "Mobile Alerting and Incident Response",
+    "long_description": "SIGNL4, Derdack's SaaS solution, re-invents critical alerting, incident response and service dispatching for operating critical infrastructure. It addresses the needs of people working in areas where swift response matters. SIGNL4 is designed to automate and optimize incident response and management processes and has strong emphasis on mobility. Unlike traditional IT applications, it incorporates concepts of consumer products for greater productivity, usability and more fun at work.\n\nLearn more and sign up for a free trial at [https://www.signl4.com](https://www.signl4.com).",
+    "installation_instructions": "1. Get your [SIGNL4](https://www.signl4.com) account.\n2. Add the SIGNL4 app from the Zendesk Marketplace.\n3. In the configuration add your SIGNL4 team secret (team_secret).\4. Test the app by creating a new ticket or by sending a manual alert.\nThis is it and now your SIGNL4 team will receive alerts whenever a new ticket is created in Zendesk.",
+    "parameters": {
+      "team_secret": {
+        "label": "Team Secret",
+        "helpText": "Your SIGNL4 team secret."
+      }
+    }
+  }
+}
