@@ -16,11 +16,13 @@
       }
     }
   },
+  "domainWhitelist": ["connect.signl4.com"],
   "parameters": [
 	  {
-		"name": "team_secret",
+		"name": "signl4_team_secret",
 		"type": "text",
-		"required": true
+		"required": true,
+		"secure": true
 	  }
   ],
   "version": "1.0",
