@@ -22,7 +22,8 @@
   <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
   <script>
     
-	var currentUser = "";
+	var currentUser = '';
+	var teamSecret = '';
 
 	// Initialise Apps framework client. See also:
     // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
@@ -39,8 +40,10 @@
 		// Get settings
 		client.metadata().then(function(metadata) {
 			console.log(metadata.settings);
+			
+			// Get SIGNL4 team secret
+			teamSecret = metadata.settings.team_secret;
 		});
-
 
 		// Get current user
 		client.get('currentUser').then(function(data) {
@@ -66,7 +69,7 @@
 		}
 		else {
 			alert['Body'] = data.ticket.description;
-			alert['Ticket-URL'] = data.ticket.brand.url + '/agent/tickets/' + data.ticket.id,// data.ticket.url;
+			alert['Ticket-URL'] = data.ticket.brand.url + '/agent/tickets/' + data.ticket.id; // data.ticket.url;
 			alert['Requester'] = data.ticket.requester.name;
 			alert['Status'] = data.ticket.status;
 			//alert['Comments'] = data.ticket.comments_formatted;
@@ -83,8 +86,7 @@
 	// Send to SIGNL4
 	function sendSIGNL4Alert(data) {
 		var settings = {
-			url: 'https://connect.signl4.com/webhook/{{setting.signl4_team_secret}}',
-			secure: true,
+			url: 'https://connect.signl4.com/webhook/' + teamSecret,
 			type: 'POST',
 			contentType: 'application/json',
 			data: JSON.stringify(data)
