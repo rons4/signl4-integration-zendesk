@@ -23,7 +23,7 @@
   <script>
     
 	var currentUser = '';
-	var teamSecret = '';
+	var signl4TeamId = '';
 
 	// Initialise Apps framework client. See also:
     // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
@@ -41,8 +41,8 @@
 		client.metadata().then(function(metadata) {
 			console.log(metadata.settings);
 			
-			// Get SIGNL4 team secret
-			teamSecret = metadata.settings.team_secret;
+			// Get SIGNL4 team id
+			signl4TeamId = metadata.settings.team_id;
 		});
 
 		// Get current user
@@ -57,11 +57,11 @@
 	// New or updated ticket
 	client.on('ticket.saved', function(data) {
 		console.log("New ticket");
-		
+	
 		var alert = {
 			'Subject': 'Zendesk: ' + data.ticket.subject
 		}
-		
+	
 		// Check if new or solved ticket
 		if (data.ticket.status == 'solved') {
 			alert['X-S4-ExternalID'] = 'Zendesk: ' + data.ticket.id;
@@ -86,7 +86,7 @@
 	// Send to SIGNL4
 	function sendSIGNL4Alert(data) {
 		var settings = {
-			url: 'https://connect.signl4.com/webhook/' + teamSecret,
+			url: 'https://connect.signl4.com/webhook/' + signl4TeamId,
 			type: 'POST',
 			contentType: 'application/json',
 			data: JSON.stringify(data)

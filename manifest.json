@@ -18,7 +18,7 @@
   },
   "parameters": [
 	  {
-		"name": "team_secret",
+		"name": "team_id",
 		"type": "text",
 		"required": true
 	  }
