@@ -2,11 +2,6 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <!--   See Using Zendesk Garden:
-    https://developer.zendesk.com/apps/docs/developer-guide/setup#using-zendesk-garden
-    https://garden.zendesk.com/css-components/bedrock/
-    https://garden.zendesk.com/css-components/utilities/typography/
-   -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/@zendeskgarden/css-bedrock@7.0.21,npm/@zendeskgarden/css-utilities@4.3.0">
 </head>
 <body>
@@ -25,7 +20,7 @@
 	var currentUser = '';
 	var signl4TeamId = '';
 
-	// Initialise Apps framework client. See also:
+	// Initialize Apps framework client. See also:
     // https://developer.zendesk.com/apps/docs/developer-guide/getting_started
     var client = ZAFClient.init();
 
@@ -55,6 +50,7 @@
 	init();
 
 	// New or updated ticket
+	var updateTicket = false;
 	client.on('ticket.saved', function(data) {
 		console.log("New ticket");
 	
@@ -66,6 +62,8 @@
 		if (data.ticket.status == 'solved') {
 			alert['X-S4-ExternalID'] = 'Zendesk: ' + data.ticket.id;
 			alert['X-S4-Status'] = 'resolved';
+			
+			updateTicket = true;
 		}
 		else {
 			alert['Body'] = data.ticket.description;
@@ -77,16 +75,46 @@
 			alert['X-S4-Status'] = 'new';
 			alert['X-S4-SourceSystem'] = 'Zendesk';
 		}
+		
+		// Check the timestamps to see if this is a new ticket
+		var strCreated = data.ticket.createdAt;
+		var strUpdated = data.ticket.updatedAt;
+		var dateCreated = new Date(strCreated);
+		var dateUpdated = new Date(strUpdated);
+		var diff = Math.abs(dateUpdated - dateCreated);
+		if ((!updateTicket) && (diff > 500)) {
+			// Not new
+			return true;
+		}
 
-		sendSIGNL4Alert(alert);
+		sendMultiSIGNL4(alert);
 		return true;
 	});
 	
+	// Send to multiple team id's
+	function sendMultiSIGNL4(data) {
+		// Team IDs, e.g. "teamid1;teamid2"
+		var teamIDs = signl4TeamId.split(';');
+		for (var i = 0; i < teamIDs.length; i++) {
+			var teamId = teamIDs[i];
+
+			// Trim whitespaces
+			teamId = teamId.replace(/^\s*/, "").replace(/\s*$/, "");
+			teamId = teamId.trim();
+			if (teamId == '') {
+				break;
+			}
+
+			// Send SIGNL4 alert to current team
+			sendSIGNL4Alert(data, teamId);
+		}
+	}
+	
 
 	// Send to SIGNL4
-	function sendSIGNL4Alert(data) {
+	function sendSIGNL4Alert(data, teamId) {
 		var settings = {
-			url: 'https://connect.signl4.com/webhook/' + signl4TeamId,
+			url: 'https://connect.signl4.com/webhook/' + teamId,
 			type: 'POST',
 			contentType: 'application/json',
 			data: JSON.stringify(data)
@@ -115,7 +143,7 @@
 		"User": currentUser
 	}
 
-	sendSIGNL4Alert(alert);
+	sendMultiSIGNL4(alert);
 	
 	document.getElementById("Message").value = "";
 
