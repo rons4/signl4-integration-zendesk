@@ -54,6 +54,8 @@
 	client.on('ticket.saved', function(data) {
 		console.log("New ticket");
 	
+		updateTicket = false;
+
 		var alert = {
 			'Subject': 'Zendesk: ' + data.ticket.subject
 		}
